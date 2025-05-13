@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bank Organizer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #463D32;
+      color: white;
+      display: flex;
+      align-items: flex-start;
+      height: 200vh;
+      flex-direction: column;
+    }
+
+    #container {
+      display: flex;
+      justify-content: center;
+      width: 90%;
+      margin-top: 20px;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(8, 40px);
+      gap: 4px;
+      padding: 10px;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      background-color: #2f2a23;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .cell img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    #sidebar {
+      width: 250px;
+      padding: 10px;
+      background-color: #3b332a;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #imageSelector {
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 800px;
+      max-width: 600px;
+      overflow-y: auto;
+      background-color: #2f2a23;
+      padding: 2px;
+      border: 1px solid #222;
+      position: absolute;
+      z-index: 10;
+    }
+
+    #imageSelector input {
+      margin-bottom: 10px;
+      padding: 2px;
+      border: 1px solid #444;
+      background-color: #3b332a;
+      color: white;
+      width: 100%;
+    }
+
+    .image-option {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      width: 100%;
+      padding: 2px;
+    }
+
+    .image-option span {
+      flex-grow: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .image-option:nth-child(even) {
+      background-color: #3b332a;
+    }
+
+    .image-option:nth-child(odd) {
+      background-color: #2f2a23;
+    }
+
+    input[type="number"], button {
+      padding: 2px;
+      background-color: #5a4f40;
+      color: white;
+      border: none;
+    }
+
+    input[type="number"] {
+      width: 50%;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    button:hover {
+      background-color: #766755;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="grid"></div>
+    <div id="sidebar">
+      <h2>Bank Organizer</h2>
+
+      <label for="useGoogleTranslate">
+        <input type="checkbox" id="useGoogleTranslate" /> Translate
+      </label>
+
+      <div class="input-wrapper">
+        <label for="rowsInput">Rows:</label>
+        <input type="number" id="rowsInput" min="1" max="50" />
+      </div>
+
+      <button id="importBtn">Import Bank</button>
+      <button id="exportBtn">Export Bank</button>
+      <button id="clearBtn">Clear Bank</button>
+      <input type="file" id="importFile" accept=".json" style="display: none;" />
+    </div>
+  </div>
+
+  <div id="imageSelector">
+    <input type="text" id="searchInput" placeholder="Search items..." />
+  </div>
+
+  <!-- Load item names -->
+  <script src="osrsItemNames.js"></script>
+
+  <!-- Main functionality -->
+  <script>
+    const grid = document.getElementById('grid');
+    const rowsInput = document.getElementById('rowsInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importFile = document.getElementById('importFile');
+    const importBtn = document.getElementById('importBtn');
+    const imageSelector = document.getElementById('imageSelector');
+    const useGoogleTranslateCheckbox = document.getElementById('useGoogleTranslate');
+    const searchInput = document.getElementById('searchInput');
+    let activeCellIndex = null;
+    let gridData = [];
+
+    function getImageUrlFromName(name) {
+      const base = useGoogleTranslateCheckbox.checked
+        ? "https://oldschool-runescape-wiki.translate.goog/images/"
+        : "https://oldschool.runescape.wiki/images/";
+      return `${base}${name.replace(/ /g, "_")}.png`;
+    }
+
+    function buildSelector(searchQuery = '') {
+      imageSelector.innerHTML = '<input type="text" id="searchInput" placeholder="Search items..." />';
+      const searchBox = imageSelector.querySelector('#searchInput');
+      searchBox.value = searchQuery;
+      searchBox.focus();
+      searchBox.addEventListener('input', () => buildSelector(searchBox.value));
+
+      const filteredItems = osrsItemNames
+        .filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => a.localeCompare(b));
+
+      filteredItems.forEach((name, index) => {
+        const url = getImageUrlFromName(name);
+        const option = document.createElement('div');
+        option.classList.add('image-option');
+
+        // Commented out image rendering for performance
+        /*
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = name;
+        img.title = name;
+        option.appendChild(img);
+        */
+
+        const label = document.createElement('span');
+        label.textContent = name;
+
+        option.addEventListener('click', () => {
+          if (activeCellIndex !== null) {
+            gridData[activeCellIndex] = name;
+            updateGrid();
+            saveGridData();
+            imageSelector.style.display = 'none';
+            buildSelector(''); 
+          }
+        });
+
+        option.appendChild(label);
+        imageSelector.appendChild(option);
+      });
+    }
+
+    function updateGrid() {
+      const rows = parseInt(rowsInput.value);
+      const total = 8 * rows;
+      grid.innerHTML = '';
+      grid.style.gridTemplateRows = `repeat(${rows}, 40px)`;
+
+      for (let i = 0; i < total; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.setAttribute('draggable', 'true');
+
+        cell.addEventListener('click', (e) => {
+          activeCellIndex = i;
+          const { clientX: mouseX, clientY: mouseY } = e;
+          imageSelector.style.left = `${mouseX + 10}px`;
+          imageSelector.style.top = `${mouseY + 10}px`;
+          imageSelector.style.display = 'flex';
+          buildSelector(); 
+        });
+
+        cell.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          gridData[i] = null;
+          updateGrid();
+          saveGridData();
+        });
+
+        cell.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', i);
+        });
+
+        cell.addEventListener('dragover', (e) => {
+          e.preventDefault();
+        });
+
+        cell.addEventListener('drop', (e) => {
+          const sourceIndex = e.dataTransfer.getData('text/plain');
+          if (sourceIndex !== i) {
+            [gridData[sourceIndex], gridData[i]] = [gridData[i], gridData[sourceIndex]];
+            updateGrid();
+            saveGridData();
+          }
+        });
+
+        if (gridData[i]) {
+          const img = document.createElement('img');
+          img.src = getImageUrlFromName(gridData[i]);
+          cell.appendChild(img);
+        }
+
+        grid.appendChild(cell);
+      }
+    }
+
+    function saveGridData() {
+      localStorage.setItem('bankGrid', JSON.stringify(gridData));
+      localStorage.setItem('bankRows', rowsInput.value);
+    }
+
+function loadGridData() {
+  const savedGrid = localStorage.getItem('bankGrid');
+  const savedRows = localStorage.getItem('bankRows');
+
+  if (savedGrid) {
+    gridData = JSON.parse(savedGrid);
+  }
+
+  if (savedRows) {
+    rowsInput.value = savedRows;
+  } else {
+    rowsInput.value = 10; // Default to 10 rows if nothing is saved
+  }
+
+  updateGrid();
+}
+
+
+    rowsInput.addEventListener('change', () => {
+      const newRows = parseInt(rowsInput.value);
+      if (newRows > 0 && newRows <= 50) {
+        updateGrid();
+        saveGridData();
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      gridData = [];
+      updateGrid();
+      saveGridData();
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const dataStr = JSON.stringify(gridData);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      const exportFileName = 'osrs_bank.json';
+      const exportLink = document.createElement('a');
+      exportLink.href = dataUri;
+      exportLink.download = exportFileName;
+      exportLink.click();
+    });
+
+    importBtn.addEventListener('click', () => {
+      importFile.click();
+    });
+
+    importFile.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            gridData = JSON.parse(e.target.result);
+            updateGrid();
+            saveGridData();
+          } catch (err) {
+            alert('Invalid JSON file.');
+          }
+        };
+        reader.readAsText(e.target.files[0]);
+      }
+    });
+
+    useGoogleTranslateCheckbox.addEventListener('change', () => {
+      localStorage.setItem('useGoogleTranslate', useGoogleTranslateCheckbox.checked);
+      buildSelector(searchInput.value);
+      updateGrid();
+      saveGridData();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        imageSelector.style.display = 'none';
+        buildSelector(''); 
+      }
+    });
+
+    const savedTranslate = localStorage.getItem('useGoogleTranslate');
+    if (savedTranslate !== null) {
+      useGoogleTranslateCheckbox.checked = savedTranslate === 'true';
+    }
+
+    loadGridData();
+    buildSelector();
+    updateGrid();
+  </script>
+</body>
+</html>
