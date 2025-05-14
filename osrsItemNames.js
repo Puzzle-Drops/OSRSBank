@@ -3989,6 +3989,7 @@ const osrsItemNames = [
 "Zuriel's staff (bh)",
 "Zuriel's staff (Deadman Mode)",
 "Zuriel's Staff (Last Man Standing)",
+"Tonalztics of ralos",
 	
 
 ];
