@@ -3406,7 +3406,7 @@ const osrsItemNames = [
 "Studded chaps (g)",
 "Studded chaps (t)",
 "Sulphur blades",
-"Sunfire Fanatic Shoes",
+"Sunfire fanatic chausses",
 "Sunfire fanatic cuirass",
 "Sunfire fanatic helm",
 "Sunken locket",
