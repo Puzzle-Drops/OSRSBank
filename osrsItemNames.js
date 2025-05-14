@@ -1423,6 +1423,7 @@ const osrsItemNames = [
 "Echo venator bow",
 "Echo virtus robe bottom",
 "Echo virtus robe top",
+"Echo virtus mask",
 "Eclipse atlatl",
 "Eclipse atlatl (Last Man Standing)",
 "Eclipse moon chestplate",
