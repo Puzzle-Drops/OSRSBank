@@ -142,10 +142,6 @@
     <div id="sidebar">
       <h2>Bank Organizer</h2>
 
-      <label for="useGoogleTranslate">
-        <input type="checkbox" id="useGoogleTranslate" /> Translate
-      </label>
-
       <div class="input-wrapper">
         <label for="rowsInput">Rows:</label>
         <input type="number" id="rowsInput" min="1" max="50" />
@@ -174,16 +170,12 @@
     const importFile = document.getElementById('importFile');
     const importBtn = document.getElementById('importBtn');
     const imageSelector = document.getElementById('imageSelector');
-    const useGoogleTranslateCheckbox = document.getElementById('useGoogleTranslate');
     const searchInput = document.getElementById('searchInput');
     let activeCellIndex = null;
     let gridData = [];
 
     function getImageUrlFromName(name) {
-      const base = useGoogleTranslateCheckbox.checked
-        ? "https://oldschool-runescape-wiki.translate.goog/images/"
-        : "https://oldschool.runescape.wiki/images/";
-      return `${base}${name.replace(/ /g, "_")}.png`;
+      return `/img/${name.replace(/ /g, "_")}.png`;
     }
 
     function buildSelector(searchQuery = '') {
@@ -202,15 +194,6 @@
         const option = document.createElement('div');
         option.classList.add('image-option');
 
-        // Commented out image rendering for performance
-        /*
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = name;
-        img.title = name;
-        option.appendChild(img);
-        */
-
         const label = document.createElement('span');
         label.textContent = name;
 
@@ -220,7 +203,7 @@
             updateGrid();
             saveGridData();
             imageSelector.style.display = 'none';
-            buildSelector(''); 
+            buildSelector('');
           }
         });
 
@@ -246,7 +229,7 @@
           imageSelector.style.left = `${mouseX + 10}px`;
           imageSelector.style.top = `${mouseY + 10}px`;
           imageSelector.style.display = 'flex';
-          buildSelector(); 
+          buildSelector();
         });
 
         cell.addEventListener('contextmenu', (e) => {
@@ -288,23 +271,22 @@
       localStorage.setItem('bankRows', rowsInput.value);
     }
 
-function loadGridData() {
-  const savedGrid = localStorage.getItem('bankGrid');
-  const savedRows = localStorage.getItem('bankRows');
+    function loadGridData() {
+      const savedGrid = localStorage.getItem('bankGrid');
+      const savedRows = localStorage.getItem('bankRows');
 
-  if (savedGrid) {
-    gridData = JSON.parse(savedGrid);
-  }
+      if (savedGrid) {
+        gridData = JSON.parse(savedGrid);
+      }
 
-  if (savedRows) {
-    rowsInput.value = savedRows;
-  } else {
-    rowsInput.value = 10; // Default to 10 rows if nothing is saved
-  }
+      if (savedRows) {
+        rowsInput.value = savedRows;
+      } else {
+        rowsInput.value = 10;
+      }
 
-  updateGrid();
-}
-
+      updateGrid();
+    }
 
     rowsInput.addEventListener('change', () => {
       const newRows = parseInt(rowsInput.value);
@@ -350,24 +332,12 @@ function loadGridData() {
       }
     });
 
-    useGoogleTranslateCheckbox.addEventListener('change', () => {
-      localStorage.setItem('useGoogleTranslate', useGoogleTranslateCheckbox.checked);
-      buildSelector(searchInput.value);
-      updateGrid();
-      saveGridData();
-    });
-
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         imageSelector.style.display = 'none';
-        buildSelector(''); 
+        buildSelector('');
       }
     });
-
-    const savedTranslate = localStorage.getItem('useGoogleTranslate');
-    if (savedTranslate !== null) {
-      useGoogleTranslateCheckbox.checked = savedTranslate === 'true';
-    }
 
     loadGridData();
     buildSelector();
