@@ -175,7 +175,7 @@
     let gridData = [];
 
     function getImageUrlFromName(name) {
-      return `/img/${name.replace(/ /g, "_")}.png`;
+      return `img/${name.replace(/ /g, "_")}.png`; // Removed leading '/'
     }
 
     function buildSelector(searchQuery = '') {
@@ -203,7 +203,7 @@
             updateGrid();
             saveGridData();
             imageSelector.style.display = 'none';
-            buildSelector('');
+            buildSelector(''); // Reset search
           }
         });
 
@@ -335,7 +335,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         imageSelector.style.display = 'none';
-        buildSelector('');
+        buildSelector(''); // Reset search
       }
     });
 
