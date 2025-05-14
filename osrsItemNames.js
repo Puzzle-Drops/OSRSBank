@@ -1632,7 +1632,7 @@ const osrsItemNames = [
 "Gardening boots",
 "Gas mask",
 "Gauntlet cape",
-"Ghommal's avenric defender 5",
+"Ghommal's avernic defender 5",
 "Ghommal's avernic defender 6",
 "Ghommal's hilt 1",
 "Ghommal's hilt 2",
