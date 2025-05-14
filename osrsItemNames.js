@@ -3950,7 +3950,7 @@ const osrsItemNames = [
 "Zamorak robe top",
 "Zamorak staff",
 "Zamorak stole",
-"Zamorakian until",
+"Zamorakian hasta",
 "Zamorakian spear",
 "Zaryte bow",
 "Zaryte crossbow",
