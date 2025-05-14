@@ -3533,7 +3533,7 @@ const osrsItemNames = [
 "Tortugan vessel",
 "Full turf",
 "Torva full helm (unobtainable item)",
-"Torva plate body",
+"Torva platebody",
 "Torva platebody (unobtainable item)",
 "Torva platelegs",
 "Torva platelegs (unobtainable item)",
