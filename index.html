@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bank Organizer</title>
   <style>
-    body {
+      body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #463D32;
@@ -59,8 +59,7 @@
       display: none;
       flex-direction: column;
       gap: 2px;
-      max-height: 800px;
-      max-width: 600px;
+      max-height: 500px;
       overflow-y: auto;
       background-color: #2f2a23;
       padding: 2px;
@@ -78,29 +77,31 @@
       width: 100%;
     }
 
-    .image-option {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      cursor: pointer;
-      width: 100%;
-      padding: 2px;
-    }
 
-    .image-option span {
-      flex-grow: 1;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
+  .image-option {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    width: 100%; /* Ensure full width */
+  }
 
-    .image-option:nth-child(even) {
-      background-color: #3b332a;
-    }
+  .image-option img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain; /* Ensures image is not distorted */
 
-    .image-option:nth-child(odd) {
-      background-color: #2f2a23;
-    }
+  }
+
+  .image-option span {
+    flex-grow: 1; /* Allow text to take available space */
+  }
+
+  .image-option span {
+    overflow: hidden; /* Hide text overflow */
+    white-space: nowrap; /* Prevent text from wrapping */
+    text-overflow: ellipsis; /* Show "..." if text is too long */
+  }
 
     input[type="number"], button {
       padding: 2px;
@@ -133,6 +134,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+  
+  
+    .image-option:nth-child(even) {
+      background-color: #3b332a;
+    }
+
+    .image-option:nth-child(odd) {
+      background-color: #2f2a23;
     }
   </style>
 </head>
@@ -189,27 +199,33 @@
         .filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()))
         .sort((a, b) => a.localeCompare(b));
 
-      filteredItems.forEach((name, index) => {
-        const url = getImageUrlFromName(name);
-        const option = document.createElement('div');
-        option.classList.add('image-option');
+filteredItems.forEach(name => {
+  const url = getImageUrlFromName(name);
+  const option = document.createElement('div');
+  option.classList.add('image-option');
 
-        const label = document.createElement('span');
-        label.textContent = name;
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = name;
+  img.title = name;
 
-        option.addEventListener('click', () => {
-          if (activeCellIndex !== null) {
-            gridData[activeCellIndex] = name;
-            updateGrid();
-            saveGridData();
-            imageSelector.style.display = 'none';
-            buildSelector(''); // Reset search
-          }
-        });
+  const label = document.createElement('span');
+  label.textContent = name;
 
-        option.appendChild(label);
-        imageSelector.appendChild(option);
-      });
+  option.addEventListener('click', () => {
+    if (activeCellIndex !== null) {
+      gridData[activeCellIndex] = name;
+      updateGrid();
+      saveGridData();
+      imageSelector.style.display = 'none';
+      buildSelector('');
+    }
+  });
+
+  option.appendChild(img);
+  option.appendChild(label);
+  imageSelector.appendChild(option);
+});
     }
 
     function updateGrid() {
