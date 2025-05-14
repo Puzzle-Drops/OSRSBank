@@ -1420,7 +1420,7 @@ const osrsItemNames = [
 "Echo boots",
 "Echo harpoon",
 "Echo pickaxe",
-"Echo Venator Bow",
+"Echo venator bow",
 "Echo virtus robe bottom",
 "Echo virtus robe top",
 "Eclipse atlatl",
